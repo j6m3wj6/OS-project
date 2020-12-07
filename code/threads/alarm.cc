@@ -51,48 +51,19 @@ Alarm::CallBack()
 {
     Interrupt *interrupt = kernel->interrupt;
     MachineStatus status = interrupt->getStatus();
-    bool woken = _sleepList.PutToReady();    
-    if (status == IdleMode && !woken && _sleepList.IsEmpty()) {	// is it time to quit?
-        if (!interrupt->AnyFutureInterrupts()) {
+//[OS-Project2]Modified
+    kernel->scheduler->AlarmTicks();
+    if (status == IdleMode && !kernel->scheduler->AThreadWakeUp && kernel->scheduler->noThreadSleeping()) {	// is it time to quit?
+	if (!interrupt->AnyFutureInterrupts()) {
 	    timer->Disable();	// turn off the timer
 	}
     } else {			// there's someone to preempt
+	if(kernel->scheduler->getType() == FCFS) return;
 	interrupt->YieldOnReturn();
     }
+//[OS-Project2]End-Modified 
 }
+
 void Alarm::WaitUntil(int x) {
-    //關中斷
-    IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
-    Thread* t = kernel->currentThread;
-    cout << "Alarm::WaitUntil go sleep" << endl;
-    _sleepList.PutToSleep(t, x);
-    //開中斷
-    kernel->interrupt->SetLevel(oldLevel);
-}
-
-bool sleepList::IsEmpty() {
-    return _threadlist.size() == 0;
-}
-
-void sleepList::PutToSleep(Thread*t, int x) {
-    ASSERT(kernel->interrupt->getLevel() == IntOff);
-    _threadlist.push_back(sleepThread(t, _current_interrupt + x));
-    t->Sleep(false);
-}
-
-bool sleepList::PutToReady() {
-    bool woken = false;
-    _current_interrupt ++;
-    for(std::list<sleepThread>::iterator it = _threadlist.begin();
-        it != _threadlist.end(); ) {
-        if(_current_interrupt >= it->when) {
-            woken = true;
-            cout << "sleepList::PutToReady Thread woken" << endl;
-            kernel->scheduler->ReadyToRun(it->sleeper);
-            it = _threadlist.erase(it);
-        } else {
-            it++;
-        }
-    }
-    return woken;
+	kernel->scheduler->GoSleep(kernel->currentThread, x);
 }

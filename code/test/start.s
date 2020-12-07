@@ -140,11 +140,14 @@ PrintInt:
 	
 	.global Sleep
 	.ent	Sleep
+
+//[OS-Project2]Modified
 Sleep: 
 	addiu	$2, $0, SC_Sleep
 	syscall
 	j	$31
 	.end	Sleep
+//[OS-Project2]End-Modified
 
 /* dummy function to keep gcc happy */
         .globl  __main

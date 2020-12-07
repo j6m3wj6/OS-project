@@ -30,8 +30,9 @@
 #define SC_ThreadFork	9
 #define SC_ThreadYield	10
 #define SC_PrintInt	11
+//[OS-Project2]Modified 
 #define SC_Sleep        12
-
+//[OS-Project2]End-Modified 
 #ifndef IN_ASM
 
 /* The system call interface.  These are the operations the Nachos
@@ -130,7 +131,10 @@ void ThreadYield();
 
 void PrintInt(int number);	//my System Call
 
+//[OS-Project2]Modified 
 void Sleep(int number);
+//[OS-Project2]End-Modified
+
 #endif /* IN_ASM */
 
 #endif /* SYSCALL_H */

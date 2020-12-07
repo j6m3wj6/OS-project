@@ -19,7 +19,8 @@
 #undef MAIN
 
 #include "main.h"
-
+#include "kernel.h"
+#include "scheduler.h"
 // global variables
 KernelType *kernel;
 Debug *debug;
@@ -57,7 +58,6 @@ main(int argc, char **argv)
 {
     int i;
     char *debugArg = "";
-
     // before anything else, initialize the debugging system
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-d") == 0) {
@@ -69,7 +69,6 @@ main(int argc, char **argv)
 	} else if (strcmp(argv[i], "-z") == 0) {
             cout << copyright;
 	}
-
     }
     debug = new Debug(debugArg);
     

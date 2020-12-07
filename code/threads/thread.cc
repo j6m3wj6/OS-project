@@ -246,12 +246,10 @@ Thread::Sleep (bool finishing)
     ASSERT(kernel->interrupt->getLevel() == IntOff);
     
     DEBUG(dbgThread, "Sleeping thread: " << name);
-//    cout << "Sleep\n";
     status = BLOCKED;
-    //bool woken = Alarm::_sleepList.PutToReady(); 
     while ((nextThread = kernel->scheduler->FindNextToRun()) == NULL) {
 	kernel->interrupt->Idle();	// no one to run, wait for an interrupt
-   } 
+    } 
     // returns when it's time for us to run
     kernel->scheduler->Run(nextThread, finishing); 
 }
@@ -437,3 +435,26 @@ Thread::SelfTest()
     SimpleThread(0);
 }
 
+
+void
+threadInfo() {
+    Thread *ct = kernel->currentThread;
+    for (int i=5; i>0; i--) {
+        printf("%s_priority %d :remaining %d\n", ct->getName(), ct->getPriority(), i);
+    }
+}
+void
+Thread::SchedulingTest()
+{
+    const int thread_num = 3;
+    char *name[thread_num] = {"A", "B", "C"};
+    int thread_priority[thread_num] = {5, 1, 5 };
+    
+    Thread *t;
+    for (int i = 0; i < thread_num; i ++) {
+        t = new Thread(name[i]);
+        t->setPriority(thread_priority[i]);
+        t->Fork((VoidFunctionPtr) threadInfo, (void *)i);
+    }
+    kernel->currentThread->Yield();
+}

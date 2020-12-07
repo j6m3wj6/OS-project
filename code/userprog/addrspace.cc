@@ -116,7 +116,7 @@ AddrSpace::Load(char *fileName)
     pageTable = new TranslationEntry[numPages];
     for (unsigned int i=0, j=0; i<numPages; i++) {
 	pageTable[i].virtualPage = i;
-	while(usedPhysicalPage[j++] == true) {}
+	while(j < NumPhysPages && usedPhysicalPage[j++] == true) {}
 	AddrSpace::usedPhysicalPage[j-1] = true;
 	bzero(&kernel->machine->mainMemory[(j-1) * PageSize], PageSize);
 	pageTable[i].physicalPage = j-1;

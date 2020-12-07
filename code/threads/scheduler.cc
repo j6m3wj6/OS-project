@@ -29,12 +29,51 @@
 //	Initially, no ready threads.
 //----------------------------------------------------------------------
 
-Scheduler::Scheduler()
+//int SJF_cmp(Thread *a, Thread *b) {
+//       if(a->getBurstTime() < b->getBurstTime()) return -1;
+//        else return 1;
+//}
+
+int FCFS_cmp (Thread *a, Thread *b) {
+	return 1;
+}
+int Priority_cmp(Thread *a, Thread *b) {
+	if(a->getPriority() < b->getPriority()) return -1;
+	else return 1;
+}
+int SleepTime_cmp(SleepingThread* x, SleepingThread* y) {
+        if (x->getSleepTime() < y->getSleepTime()) return -1;
+        else return 1;
+}
+//Modified
+Scheduler::Scheduler(SchedulerType sType)
 {
-//	schedulerType = type;
-	readyList = new List<Thread *>; 
+	sleepingList = new SortedList<SleepingThread *>(SleepTime_cmp);
 	toBeDestroyed = NULL;
+	AThreadWakeUp = false;
+
+	cout << "====== Scheduler type is " << sType << " ======\n";
+	schedulerType = sType;
+    	switch(schedulerType) {
+    	case RR:
+        	readyList = new List<Thread *>;
+        	break;
+//    	case SJF:
+//        	readyList = new SortedList<Thread *>(SJF_cmp);
+//        break;
+    	case FCFS:
+        	readyList = new SortedList<Thread *>(FCFS_cmp);
+        break;
+    	case Priority:
+        	readyList = new SortedList<Thread *>(Priority_cmp);
+	break;
+	}
+
 } 
+//End Modified
+
+
+
 
 //----------------------------------------------------------------------
 // Scheduler::~Scheduler
@@ -43,7 +82,10 @@ Scheduler::Scheduler()
 
 Scheduler::~Scheduler()
 { 
-    delete readyList; 
+    delete readyList;
+//Modified 
+//    delete sleepingList; 
+//End Modified
 } 
 
 //----------------------------------------------------------------------
@@ -106,7 +148,7 @@ Scheduler::Run (Thread *nextThread, bool finishing)
 {
     Thread *oldThread = kernel->currentThread;
  
-//	cout << "Current Thread" <<oldThread->getName() << "    Next Thread"<<nextThread->getName()<<endl;
+    //cout << "Current Thread" << oldThread->getName() << "    Next Thread"<<nextThread->getName()<<endl;
    
     ASSERT(kernel->interrupt->getLevel() == IntOff);
 
@@ -184,3 +226,51 @@ Scheduler::Print()
     cout << "Ready list contents:\n";
     readyList->Apply(ThreadPrint);
 }
+
+//Modified
+void
+Scheduler::GoSleep(Thread* t, int sleepTime) 
+{
+    IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
+    SleepingThread* st = new SleepingThread(t, sleepTime);
+    sleepingList->Insert(st);
+//    cout << st->getThread()->getName() << " is going to sleep for " << sleepTime << endl;
+//    cout << sleepingList->Front()->getThread()->getName() 
+//         << " (the front thread in bed) still need to sleep for " 
+//         << sleepingList->Front()->getSleepTime() << endl;
+
+    t->Sleep(FALSE);
+    kernel->interrupt->SetLevel(oldLevel);
+
+}
+
+void 
+Scheduler::AlarmTicks()
+{
+	AThreadWakeUp = false;
+	ListIterator<SleepingThread*> iter(sleepingList);
+	for (; !iter.IsDone(); iter.Next()) {
+	    iter.Item()->decreaseSleepTime();
+	}	
+	while(!sleepingList->IsEmpty()){
+	    SleepingThread* st = sleepingList->Front();
+	    if(st->getSleepTime() == 0){
+	        ReadyToRun(st->getThread());
+		AThreadWakeUp = true;
+//		cout << "SleepintList: ";
+//		ListIterator<SleepingThread*> iter(sleepingList);
+//		for (; !iter.IsDone(); iter.Next()) {
+//			iter.Item()->getThread()->Print();
+//			cout << " --> ";
+//		}
+//		cout << "END\n";
+	        sleepingList->RemoveFront();
+	    }
+	    else {
+//		if (st->getSleepTime()%100 == 0) cout << st->getThread()->getName() << " still need " << st->getSleepTime() << " to sleep.\n"; 
+		break; 
+	    }
+	}
+}
+
+//End Modified

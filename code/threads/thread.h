@@ -107,6 +107,12 @@ class Thread {
     void Print() { cout << name; }
     void SelfTest();		// test whether thread impl is working
 
+//[OS-Project2]Modified
+    static void SchedulingTest();
+    void setPriority(int t) {priority = t;}
+    int getPriority() {return priority;}
+//[OS-Project2]End-Modified
+
   private:
     // some of the private data for this class is listed above
     
@@ -119,6 +125,9 @@ class Thread {
     void StackAllocate(VoidFunctionPtr func, void *arg);
     				// Allocate a stack for thread.
 				// Used internally by Fork()
+//[OS-Project2]Modified
+    int priority;
+//[OS-Project2]End-Modified
 
 #ifdef USER_PROGRAM
 // A thread running a user program actually has *two* sets of CPU registers -- 

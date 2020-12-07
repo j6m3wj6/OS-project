@@ -961,7 +961,8 @@ main.o: ../threads/main.cc /usr/include/stdc-predef.h ../lib/copyright.h \
  ../machine/callback.h ../machine/stats.h ../threads/alarm.h \
  ../machine/callback.h ../machine/timer.h /usr/include/c++/4.8/list \
  /usr/include/c++/4.8/bits/stl_list.h /usr/include/c++/4.8/bits/list.tcc \
- ../filesys/synchdisk.h ../machine/disk.h ../threads/synch.h
+ ../filesys/synchdisk.h ../machine/disk.h ../threads/synch.h \
+ ../threads/kernel.h
 scheduler.o: ../threads/scheduler.cc /usr/include/stdc-predef.h \
  ../lib/copyright.h ../lib/debug.h ../lib/copyright.h ../lib/utility.h \
  ../lib/sysdep.h /usr/include/c++/4.8/iostream \

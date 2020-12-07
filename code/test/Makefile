@@ -33,9 +33,9 @@ CPP = /mips-x86.linux-xgcc/cpp0
 INCDIR =-I../userprog -I../threads -I../lib
 CFLAGS = -G 0 -c $(INCDIR) -B/mips-x86.linux-xgcc/
 
-all: halt shell matmult sort test1 test2 sleep
-# all: halt shell matmult sort test1 test2
-
+#Modified
+all: halt shell matmult sort test1 test2 sleep sleep2
+#End Modified
 start.o: start.s ../userprog/syscall.h
 	$(CPP) $(CPPFLAGS) start.s > strt.s
 	$(AS) $(ASFLAGS) -o start.o strt.s
@@ -76,4 +76,6 @@ test2: test2.o start.o
 sleep: sleep.o start.o
 	$(LD) $(LDFLAGS) start.o sleep.o -o sleep.coff
 	../bin/coff2noff sleep.coff sleep
-
+sleep2: sleep2.o start.o
+	$(LD) $(LDFLAGS) start.o sleep2.o -o sleep2.coff
+	../bin/coff2noff sleep2.coff sleep2

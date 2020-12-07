@@ -20,12 +20,29 @@
 enum SchedulerType {
         RR,     // Round Robin
         SJF,
+	FCFS,
         Priority
 };
 
+//Modified
+class SleepingThread {
+   public:
+	SleepingThread(){};
+        SleepingThread(Thread* thread, int time) : sleeper(thread), sleepTime(time) {};
+	void decreaseSleepTime () { this->sleepTime -= 1; };	
+	Thread* getThread () { return this->sleeper; };
+	int getSleepTime () { return sleepTime; };
+	
+   private:
+	int sleepTime;
+        Thread* sleeper;
+};
+
+//End Modified
+
 class Scheduler {
   public:
-	Scheduler();		// Initialize list of ready threads 
+	Scheduler(SchedulerType sType);		// Initialize list of ready threads 
 	~Scheduler();				// De-allocate ready list
 
 	void ReadyToRun(Thread* thread);	
@@ -39,13 +56,24 @@ class Scheduler {
 	void Print();			// Print contents of ready list
     
     // SelfTest for scheduler is implemented in class Thread
-    
+
+//Modified
+	bool noThreadSleeping() {return this->sleepingList->IsEmpty(); };
+	void GoSleep(Thread* t, int sleepTime);
+	void AlarmTicks();
+	bool AThreadWakeUp;
+	SchedulerType getType() { return schedulerType; };
+//End Modified
+
   private:
 	SchedulerType schedulerType;
 	List<Thread *> *readyList;	// queue of threads that are ready to run,
 					// but not running
 	Thread *toBeDestroyed;		// finishing thread to be destroyed
     					// by the next thread that runs
+//Modified
+	SortedList<SleepingThread *> *sleepingList;
+//End Modified
 };
 
 #endif // SCHEDULER_H

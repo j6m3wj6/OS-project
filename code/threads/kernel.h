@@ -44,6 +44,9 @@ class ThreadedKernel {
 
   private:
     bool randomSlice;		// enable pseudo-random time slicing
+//Modified
+    SchedulerType schedulerType;
+//End Modified
 };
 
 
