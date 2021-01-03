@@ -20,7 +20,6 @@
 
 #include "copyright.h"
 #include "utility.h"
-
 // The following class defines an entry in a translation table -- either
 // in a page table or a TLB.  Each entry defines a mapping from one 
 // virtual page to one physical page.
@@ -41,5 +40,18 @@ class TranslationEntry {
     bool dirty;         // This bit is set by the hardware every time the
 			// page is modified.
 };
-
+/*
+#include "filesys.h"
+#include "addrspace.h"
+//[OS-Project3]Modified
+class FrameInfoEntry {
+public:
+    bool valid; //if being used
+    bool lock;
+    AddrSpace *addrSpace; //which process is using this page
+    unsigned int vpn; //which virtual page of the process is stored in
+                      //this page
+};
+//End-Modified
+*/
 #endif

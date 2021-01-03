@@ -184,6 +184,7 @@ Machine::WriteMem(int addr, int size, int value)
 ExceptionType
 Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
 {
+//	cout << "===== Machine::Translate =====\n";
     int i;
     unsigned int vpn, offset;
     TranslationEntry *entry;
@@ -211,8 +212,20 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
 	    DEBUG(dbgAddr, "Illegal virtual page # " << virtAddr);
 	    return AddressErrorException;
 	} else if (!pageTable[vpn].valid) {
-	    DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
-	    return PageFaultException;
+//[OS-Project3]Modified
+	    cout << "Page Fault!!\n";
+		DEBUG(dbgAddr, "Invalid v:wirtual page # " << virtAddr);
+	    //return PageFaultException;
+		
+		//swapper = (swapper+1) % NumPhysPages;
+		//cout << "swapper: page " << swapper << endl;
+
+		char *goMain, *goVirtual;
+		goMain = new char[PageSize];
+		goVirtual = new char[PageSize];
+		
+
+//End-Modified
 	}
 	entry = &pageTable[vpn];
     } else {

@@ -61,6 +61,20 @@ UserProgKernel::Initialize()
 #ifdef FILESYS
     synchDisk = new SynchDisk("New SynchDisk");
 #endif // FILESYS
+//[OS-Project3]Modified
+	swapDisk = new SynchDisk("New SynchDisk for VirtualMemory");
+	frameTable = new FrameInfoEntry[NumPhysPages];
+	swapTable = new FrameInfoEntry[NumVirPages];
+
+	for (int i=0; i<NumPhysPages; i++) {
+		frameTable[i].valid = false;
+		frameTable[i].addrSpace = NULL;
+	}
+	for (int i=0; i<NumVirPages; i++) {
+        swapTable[i].valid = false;
+        swapTable[i].addrSpace = NULL;
+    }
+//End-Modified
 }
 
 //----------------------------------------------------------------------

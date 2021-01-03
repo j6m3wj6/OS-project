@@ -16,6 +16,18 @@
 #include "filesys.h"
 #include "machine.h"
 #include "synchdisk.h"
+#include "addrspace.h"
+
+class FrameInfoEntry {
+public:
+    bool valid; //if being used
+    bool lock;
+    AddrSpace *addrSpace; //which process is using this page
+    unsigned int vpn; //which virtual page of the process is stored in
+                      //this page
+};
+//End-Modified
+
 class SynchDisk;
 class UserProgKernel : public ThreadedKernel {
   public:
@@ -36,6 +48,13 @@ class UserProgKernel : public ThreadedKernel {
 #ifdef FILESYS
     SynchDisk *synchDisk;
 #endif // FILESYS
+
+//[OS=Project3]Modified
+    SynchDisk *swapDisk;
+	FrameInfoEntry *frameTable;
+	FrameInfoEntry *swapTable;
+//End-Modified
+
 
   private:
     bool debugUserProg;		// single step user program

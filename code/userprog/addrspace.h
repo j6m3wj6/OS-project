@@ -41,8 +41,12 @@ class AddrSpace {
     void InitRegisters();		// Initialize user-level CPU registers,
 					// before jumping to user code
 //[OS-Project1]Modified
-    static bool usedPhysicalPage[NumPhysPages];
+//    static bool usedPhysicalPage[NumPhysPages];
 //[OS-Project1]End-Modified
+
+//[OS-Project1]Modified
+//    static bool usedVirtualPage[NumVirPages];	
+//End-Modified
 };
 
 
