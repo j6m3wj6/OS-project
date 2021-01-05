@@ -52,7 +52,7 @@ Scheduler::Scheduler(SchedulerType sType)
 	toBeDestroyed = NULL;
 	AThreadWakeUp = false;
 
-	cout << "====== Scheduler type is " << sType << " ======\n";
+//	cout << "====== Scheduler type is " << sType << " ======\n";
 	schedulerType = sType;
     	switch(schedulerType) {
     	case RR:

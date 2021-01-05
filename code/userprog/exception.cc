@@ -94,6 +94,11 @@ ExceptionHandler(ExceptionType which)
  		    break;
 	    }
 	    break;
+	case PageFaultException: {
+		cout << "Catch Page Fault!!\n";	
+//		cout << "swapType is " << kernel->swapType << endl;
+	}
+		
 	default:
 	    cerr << "Unexpected user mode exception: " << which << "\n";
 	    break;

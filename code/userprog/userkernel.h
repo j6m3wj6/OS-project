@@ -26,6 +26,20 @@ public:
     unsigned int vpn; //which virtual page of the process is stored in
                       //this page
 };
+enum SwapType {
+	Random,
+	FIFO
+};
+class VirtualMemoryManager {
+public: 
+	VirtualMemoryManager() {
+//		cout << "VirtualMemoryManager initial\n";
+	};
+	SwapType swapType;
+	void PageFaultHandler(SwapType swapType, unsigned int vpn);
+	void SwapPage(int victim, unsigned int vpn);
+};
+
 //End-Modified
 
 class SynchDisk;
@@ -51,6 +65,8 @@ class UserProgKernel : public ThreadedKernel {
 
 //[OS=Project3]Modified
     SynchDisk *swapDisk;
+	VirtualMemoryManager *memManager;
+	SwapType swapType;
 	FrameInfoEntry *frameTable;
 	FrameInfoEntry *swapTable;
 //End-Modified

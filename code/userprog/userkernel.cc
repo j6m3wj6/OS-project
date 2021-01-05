@@ -10,18 +10,65 @@
 #include "synchconsole.h"
 #include "userkernel.h"
 #include "synchdisk.h"
-
+#include "addrspace.h"
 //----------------------------------------------------------------------
 // UserProgKernel::UserProgKernel
 // 	Interpret command line arguments in order to determine flags 
 //	for the initialization (see also comments in main.cc)  
 //----------------------------------------------------------------------
 
+//VirtualMemoryManager::VirtualMemoryManager
+//{
+//	cout << " VirtualMemoryManager initial!\n";
+//
+//}
+
+void 
+VirtualMemoryManager::PageFaultHandler(SwapType swaptype, unsigned int vpn)
+{
+	switch(swapType) {
+	case(Random): 
+		cout << "Random swapType --> "; 
+		int victim = rand() % NumPhysPages;
+		cout<<"Victim Page is : " << victim << endl;
+		SwapPage(victim, vpn);
+	}
+}
+
+void
+VirtualMemoryManager::SwapPage(int victim, unsigned int vpn)
+{
+	char* putToMain, *putToVir;
+	putToMain = new char[PageSize];
+	putToVir = new char[PageSize];
+
+	kernel->swapDisk->ReadSector(kernel->machine->pageTable[vpn].virtualPage,putToMain);
+	bcopy(&(kernel->machine->mainMemory[victim * PageSize]), putToVir, PageSize);
+	bcopy(putToMain, &(kernel->machine->mainMemory[victim * PageSize]) ,PageSize);
+	kernel->swapDisk->WriteSector(kernel->machine->pageTable[vpn].virtualPage, putToVir);
+	int swapFrameIndex = kernel->machine->pageTable[vpn].virtualPage;
+	kernel->swapTable[swapFrameIndex].addrSpace->pageTable[vpn].valid = true;
+	kernel->swapTable[swapFrameIndex].addrSpace->pageTable[vpn].physicalPage = victim;
+	
+	int victimPageVpn = kernel->frameTable[victim].vpn;
+	kernel->frameTable[victim].addrSpace->pageTable[victimPageVpn].valid = false;
+	kernel->frameTable[victim].addrSpace->pageTable[victimPageVpn].virtualPage = swapFrameIndex;
+
+	AddrSpace* temp = kernel->frameTable[victim].addrSpace;
+	kernel->frameTable[victim].addrSpace = kernel->swapTable[swapFrameIndex].addrSpace;
+	kernel->swapTable[swapFrameIndex].addrSpace = temp;
+
+	kernel->swapTable[swapFrameIndex].vpn = victimPageVpn;
+	kernel->frameTable[victim].vpn = vpn;
+	
+}
+
 UserProgKernel::UserProgKernel(int argc, char **argv) 
 		: ThreadedKernel(argc, argv)
 {
     debugUserProg = FALSE;
 	execfileNum=0;
+	swapType = Random;
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-s") == 0) {
 	    debugUserProg = TRUE;
@@ -29,12 +76,17 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
 	else if (strcmp(argv[i], "-e") == 0) {
 		execfile[++execfileNum]= argv[++i];
 	}
-    	 else if (strcmp(argv[i], "-u") == 0) {
+    else if (strcmp(argv[i], "-u") == 0) {
 		cout << "===========The following argument is defined in userkernel.cc" << endl;
-		cout << "Partial usage: nachos [-s]\n";
-		cout << "Partial usage: nachos [-u]" << endl;
-		cout << "Partial usage: nachos [-e] filename" << endl;
+		cout << "Virtual memory swap algorithm: nachos [-random]";
+		cout << "Virtual memory swap algorithm: nachos [-FIFO]";
 	}
+	else if (strcmp(argv[i], "-random") == 0) {
+		swapType = Random;
+	} 
+	else if (strcmp(argv[i], "-FIFO") == 0) {
+        swapType = FIFO;
+    }
 	else if (strcmp(argv[i], "-h") == 0) {
 		cout << "argument 's' is for debugging. Machine status  will be printed " << endl;
 		cout << "argument 'e' is for execting file." << endl;
@@ -44,6 +96,7 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
 		cout << "	./nachos -e file1 -e file2 : executing file1 and file2."  << endl;
 	}
     }
+	
 }
 
 //----------------------------------------------------------------------
@@ -63,6 +116,7 @@ UserProgKernel::Initialize()
 #endif // FILESYS
 //[OS-Project3]Modified
 	swapDisk = new SynchDisk("New SynchDisk for VirtualMemory");
+	memManager = new VirtualMemoryManager();
 	frameTable = new FrameInfoEntry[NumPhysPages];
 	swapTable = new FrameInfoEntry[NumVirPages];
 

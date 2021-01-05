@@ -40,18 +40,4 @@ class TranslationEntry {
     bool dirty;         // This bit is set by the hardware every time the
 			// page is modified.
 };
-/*
-#include "filesys.h"
-#include "addrspace.h"
-//[OS-Project3]Modified
-class FrameInfoEntry {
-public:
-    bool valid; //if being used
-    bool lock;
-    AddrSpace *addrSpace; //which process is using this page
-    unsigned int vpn; //which virtual page of the process is stored in
-                      //this page
-};
-//End-Modified
-*/
 #endif

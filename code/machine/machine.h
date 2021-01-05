@@ -32,8 +32,6 @@ const unsigned int PageSize = 128; 		// set the page size equal to
 const unsigned int NumPhysPages = 32;
 //[OS-Project3]Modified
 const unsigned int NumVirPages = 128;
-
-
 //End-Modified
 
 const int MemorySize = (NumPhysPages * PageSize);

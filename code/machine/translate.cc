@@ -1,4 +1,4 @@
-// translate.cc 
+// translate.cc
 //	Routines to translate virtual addresses to physical addresses.
 //	Software sets up a table of legal translations.  We look up
 //	in the table on every memory reference to find the true physical
@@ -212,20 +212,12 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
 	    DEBUG(dbgAddr, "Illegal virtual page # " << virtAddr);
 	    return AddressErrorException;
 	} else if (!pageTable[vpn].valid) {
-//[OS-Project3]Modified
-	    cout << "Page Fault!!\n";
 		DEBUG(dbgAddr, "Invalid v:wirtual page # " << virtAddr);
-	    //return PageFaultException;
-		
-		//swapper = (swapper+1) % NumPhysPages;
-		//cout << "swapper: page " << swapper << endl;
+	    	return PageFaultException;
+		cout << "Page Fault!!\n";
+	//	kernel->memManager->PageFaultHandler(kernel->swapType, vpn);
 
-		char *goMain, *goVirtual;
-		goMain = new char[PageSize];
-		goVirtual = new char[PageSize];
-		
 
-//End-Modified
 	}
 	entry = &pageTable[vpn];
     } else {
@@ -235,10 +227,11 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
 		break;
 	    }
 	if (entry == NULL) {				// not found
-    	    DEBUG(dbgAddr, "Invalid TLB entry for this virtual page!");
-    	    return PageFaultException;		// really, this is a TLB fault,
+    	DEBUG(dbgAddr, "Invalid TLB entry for this virtual page!");
+    	return PageFaultException;		// really, this is a TLB fault,
 						// the page may be in memory,
 						// but not in the TLB
+		
 	}
     }
 
