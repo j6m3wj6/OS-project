@@ -24,15 +24,23 @@
 //}
 
 void 
-VirtualMemoryManager::PageFaultHandler(SwapType swaptype, unsigned int vpn)
-{
-	switch(swapType) {
-	case(Random): 
-		cout << "Random swapType --> "; 
-		int victim = rand() % NumPhysPages;
-		cout<<"Victim Page is : " << victim << endl;
-		SwapPage(victim, vpn);
-	}
+VirtualMemoryManager::PageFaultHandler(SwapType type, unsigned int vpn)
+{	
+	//int victim;
+	switch(type) {
+		case(Random): 
+			cout << "Random swapType --> "; 
+			victim = rand() % NumPhysPages;
+		break;
+		case(FIFO) :
+			cout << "FIFO swapType --> ";
+			victim = (victim+1) % NumPhysPages; 
+		break;
+		
+	}	
+	
+	cout <<"Victim Page is : " << victim << endl;
+	SwapPage(victim, vpn);
 }
 
 void
@@ -78,14 +86,14 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
 	}
     else if (strcmp(argv[i], "-u") == 0) {
 		cout << "===========The following argument is defined in userkernel.cc" << endl;
-		cout << "Virtual memory swap algorithm: nachos [-random]";
-		cout << "Virtual memory swap algorithm: nachos [-FIFO]";
+		cout << "Virtual memory swap algorithm: nachos [-random]" << endl;
+		cout << "Virtual memory swap algorithm: nachos [-FIFO]" << endl;
 	}
 	else if (strcmp(argv[i], "-random") == 0) {
 		swapType = Random;
 	} 
 	else if (strcmp(argv[i], "-FIFO") == 0) {
-        swapType = FIFO;
+	     swapType = FIFO;
     }
 	else if (strcmp(argv[i], "-h") == 0) {
 		cout << "argument 's' is for debugging. Machine status  will be printed " << endl;

@@ -151,14 +151,15 @@ AddrSpace::Load(char *fileName)
 			while(virIndex < NumVirPages && kernel->swapTable[virIndex].valid) {
 				virIndex++;	
 			}
-//			cout << "Virtual memory page at: " << virIndex << endl;
+			cout << "Virtual memory page at: " << virIndex << endl;
 			kernel->swapTable[virIndex].valid = true;
 			kernel->swapTable[virIndex].vpn = i;
 		    kernel->swapTable[virIndex].addrSpace = this;
 			pageTable[i].virtualPage = virIndex;
 			pageTable[i].valid = false;
-			//kernel->swapDisk->WriteSector(virIndex, buf);
 			executable->ReadAt(buf, PageSize, noffH.code.inFileAddr + i * PageSize);	
+			//bcopy(buf,&(kernel->swapDisk[(virIndex)*PageSize]),PageSize);
+			//kernel->swapDisk->WriteSector(virIndex, buf);
 		}
 	  }
     }
@@ -172,7 +173,6 @@ AddrSpace::Load(char *fileName)
 //    }
 
 //End-Modified
-   cout << "##"; 
     delete executable;			// close file
     return TRUE;			// success
 }

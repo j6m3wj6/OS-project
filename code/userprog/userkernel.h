@@ -35,9 +35,9 @@ public:
 	VirtualMemoryManager() {
 //		cout << "VirtualMemoryManager initial\n";
 	};
-	SwapType swapType;
 	void PageFaultHandler(SwapType swapType, unsigned int vpn);
 	void SwapPage(int victim, unsigned int vpn);
+	int victim;
 };
 
 //End-Modified

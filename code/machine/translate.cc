@@ -213,9 +213,9 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
 	    return AddressErrorException;
 	} else if (!pageTable[vpn].valid) {
 		DEBUG(dbgAddr, "Invalid v:wirtual page # " << virtAddr);
-	    	return PageFaultException;
+//	    	return PageFaultException;
 		cout << "Page Fault!!\n";
-	//	kernel->memManager->PageFaultHandler(kernel->swapType, vpn);
+		kernel->memManager->PageFaultHandler(kernel->swapType, vpn);
 
 
 	}
@@ -227,14 +227,14 @@ Machine::Translate(int virtAddr, int* physAddr, int size, bool writing)
 		break;
 	    }
 	if (entry == NULL) {				// not found
-    	DEBUG(dbgAddr, "Invalid TLB entry for this virtual page!");
-    	return PageFaultException;		// really, this is a TLB fault,
+	    	DEBUG(dbgAddr, "Invalid TLB entry for this virtual page!");
+	    	//return PageFaultException;		// really, this is a TLB fault,
 						// the page may be in memory,
 						// but not in the TLB
+		kernel->memManager->PageFaultHandler(kernel->swapType, vpn);
 		
 	}
     }
-
     if (entry->readOnly && writing) {	// trying to write to a read-only page
 	DEBUG(dbgAddr, "Write to read-only page at " << virtAddr);
 	return ReadOnlyException;
